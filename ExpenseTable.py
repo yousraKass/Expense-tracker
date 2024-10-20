@@ -19,3 +19,10 @@ class ExpenseTable(QTableWidget):
         self.insertRow(row_position)
         self.setItem(row_position, 0, QTableWidgetItem(expense_name))
         self.setItem(row_position, 1, QTableWidgetItem(price_text))
+
+    # Delete expense
+    def delete_expense(self):
+        selected_rows = self.selectionModel().selectedRows()
+        for index in sorted(selected_rows, reverse=True):
+            self.removeRow(index.row()) 
+    

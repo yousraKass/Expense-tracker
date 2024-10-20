@@ -7,7 +7,6 @@ from InputSection import InputSection
 from ExpenseTable import ExpenseTable
 from TotalDisplay import TotalDisplay
 
-
 class ExpenseApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -25,31 +24,37 @@ class ExpenseApp(QMainWindow):
         self.menu_bar = MenuBar(self)
         self.setMenuBar(self.menu_bar)
 
-        # Input section
-        self.input_section = InputSection(self.add_expense)
-        layout.addWidget(self.input_section)
-
         # Expense table
-        self.table = ExpenseTable()
+        self.table = ExpenseTable()  # Create the table instance
         layout.addWidget(self.table)
+
+        # Input section, pass the ExpenseTable instance
+        self.input_section = InputSection(self.add_expense, self.table)
+        layout.addWidget(self.input_section)
 
         # Total display
         self.total_display = TotalDisplay()
         layout.addWidget(self.total_display)
 
-        # Update total 
+        # Update total
         self.update_total()
 
     def add_expense(self):
+        # Get the inputs from the input section
         expense_name, price_text = self.input_section.get_inputs()
+        # Add the expense to the table
         self.table.add_expense(expense_name, price_text)
+        # Clear the inputs after adding the expense
         self.input_section.clear_inputs()
+        # Update the total after adding the expense
         self.update_total()
 
     def update_total(self):
         total = 0.0
+        # Iterate through the rows in the table to calculate the total
         for row in range(self.table.rowCount()):
             price_item = self.table.item(row, 1)
             if price_item:
                 total += float(price_item.text())
+        # Update the total display
         self.total_display.update_total(total)
