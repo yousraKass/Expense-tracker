@@ -24,7 +24,7 @@ class ExpenseDb:
 
     def delete(self, expense):
         self.cur.execute(
-            "delete from Expenses where expense=?",
+            "delete from Expenses where expense_name=?",
             (expense,)
         )
         self.conn.commit()
