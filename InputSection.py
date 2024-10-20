@@ -1,12 +1,12 @@
 from PyQt5.QtWidgets import ( 
     QLineEdit, QLabel, QPushButton, QWidget, QHBoxLayout
 )
-
-
+from ExpenseTable import ExpenseTable
 
 class InputSection(QWidget):
-    def __init__(self, add_expense_callback):
+    def __init__(self, add_expense_callback, expense_table):
         super().__init__()
+        self.expense_table = expense_table 
         self.expense_input = QLineEdit()
         self.price_input = QLineEdit()
         self.setup_input_layout(add_expense_callback)
@@ -24,12 +24,17 @@ class InputSection(QWidget):
         add_button = QPushButton("Add Expense")
         add_button.clicked.connect(add_expense_callback)
 
+        # Create the button to delete selected expenses
+        delete_button = QPushButton("Delete Expense")
+        delete_button.clicked.connect(self.expense_table.delete_expense) 
+
         # Add widgets to layout
         layout.addWidget(expense_label)
         layout.addWidget(self.expense_input)
         layout.addWidget(price_label)
         layout.addWidget(self.price_input)
         layout.addWidget(add_button)
+        layout.addWidget(delete_button)
 
     def get_inputs(self):
         return self.expense_input.text().strip(), self.price_input.text().strip()
