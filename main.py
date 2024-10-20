@@ -2,9 +2,8 @@ import sys
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout,
     QHBoxLayout, QTableWidget, QTableWidgetItem, 
-    QLineEdit, QLabel, QPushButton, QMenuBar, QMenu
+    QLineEdit, QLabel, QPushButton, QMenuBar, QMenu, QMessageBox
 )
-
 from PyQt5.QtCore import Qt
 
 class ExpenseApp(QMainWindow):
@@ -34,7 +33,6 @@ class ExpenseApp(QMainWindow):
         
         self.bottom_panel(layout)
         
-        
         self.update_total()
    
     def setup_menu_bar(self):
@@ -50,7 +48,7 @@ class ExpenseApp(QMainWindow):
         menu_bar.addMenu(help_menu)
 
     def setup_input_section(self,layout):
-        # Create the top panel for input fields and add button
+        # Create the top panel for input fields and add/delete buttons
         top_panel = QHBoxLayout()
         layout.addLayout(top_panel)
 
@@ -67,13 +65,18 @@ class ExpenseApp(QMainWindow):
         add_button = QPushButton("Add Expense")
         add_button.clicked.connect(self.add_expense)
 
+        # Create the button to delete selected expenses
+        delete_button = QPushButton("Delete Expense")
+        delete_button.clicked.connect(self.delete_expense)
+
         # Add widgets to the top panel
         top_panel.addWidget(expense_label)
         top_panel.addWidget(self.expense_input)
         top_panel.addWidget(price_label)
         top_panel.addWidget(self.price_input)
         top_panel.addWidget(add_button)
-
+        top_panel.addWidget(delete_button)
+        
     def create_table(self, layout):
         # Create the table to display expenses
         self.table = QTableWidget()
@@ -96,24 +99,48 @@ class ExpenseApp(QMainWindow):
         total_layout.addWidget(self.total_value)
         layout.addLayout(total_layout)
 
-
     def add_expense(self):
         # Get the values from the input fields
         expense_name = self.expense_input.text().strip()
         price_text = self.price_input.text().strip()
 
-        # Add a new row to the table
-        row_position = self.table.rowCount()
-        self.table.insertRow(row_position)
-        self.table.setItem(row_position, 0, QTableWidgetItem(expense_name))
-        self.table.setItem(row_position, 1, QTableWidgetItem(price_text))
+        if expense_name and price_text:
+            # Add a new row to the table
+            row_position = self.table.rowCount()
+            self.table.insertRow(row_position)
+            self.table.setItem(row_position, 0, QTableWidgetItem(expense_name))
+            self.table.setItem(row_position, 1, QTableWidgetItem(price_text))
 
-        # Clear the input fields
-        self.expense_input.clear()
-        self.price_input.clear()
+            # Clear the input fields
+            self.expense_input.clear()
+            self.price_input.clear()
 
-        # Update the total
-        self.update_total()
+            # Update the total
+            self.update_total()
+        else:
+            QMessageBox.warning(self, "Error", "Please fill both fields!")
+
+    def delete_expense(self):
+        # Get the currently selected row
+        selected_row = self.table.currentRow()
+
+        if selected_row >= 0:
+            # Confirm deletion
+            confirm = QMessageBox.question(
+                self, "Delete Expense",
+                "Are you sure you want to delete the selected expense?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+
+            if confirm == QMessageBox.Yes:
+                # Remove the selected row
+                self.table.removeRow(selected_row)
+
+                # Update the total
+                self.update_total()
+        else:
+            # Show a warning if no row is selected
+            QMessageBox.warning(self, "Error", "No expense selected for deletion.")
 
     def update_total(self):
         # Calculate the total price
