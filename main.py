@@ -26,7 +26,7 @@ class ExpenseApp(QMainWindow):
         # Create a vertical layout for the central widget
         layout = QVBoxLayout(central_widget)
 
-        self.setup_menu_bar()
+        self.setup_menu_bar(["File","Edit","Help"])
         # Input section
         self.setup_input_section(layout)
 
@@ -37,17 +37,13 @@ class ExpenseApp(QMainWindow):
         
         self.update_total()
    
-    def setup_menu_bar(self):
-        # Create a menu bar
+    def setup_menu_bar(self, sections):
+        # Create a menu bar,
         menu_bar = QMenuBar(self)
         self.setMenuBar(menu_bar)
         
-        file_menu = QMenu("File", self)
-        edit_menu = QMenu("Edit", self)
-        help_menu = QMenu("Help", self)
-        menu_bar.addMenu(file_menu)
-        menu_bar.addMenu(edit_menu)
-        menu_bar.addMenu(help_menu)
+        for section in sections:
+            menu_bar.addMenu(QMenu(section, self))
 
     def setup_input_section(self,layout):
         # Create the top panel for input fields and add button
@@ -95,7 +91,6 @@ class ExpenseApp(QMainWindow):
         total_layout.addWidget(total_label)
         total_layout.addWidget(self.total_value)
         layout.addLayout(total_layout)
-
 
     def add_expense(self):
         # Get the values from the input fields
