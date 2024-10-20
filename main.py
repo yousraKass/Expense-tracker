@@ -102,6 +102,19 @@ class ExpenseApp(QMainWindow):
         expense_name = self.expense_input.text().strip()
         price_text = self.price_input.text().strip()
 
+        if not expense_name:
+                self.show_error_message("Expense name cannot be empty.")
+                    return
+        try:
+            price_value = float(price_text)
+            if price_value < 0:
+                self.show_error_message("Price must be a positive number.")
+                    return
+        except ValueError:
+           
+                self.show_error_message("Invalid price format. Please enter a number.")
+                    return
+
         # Add a new row to the table
         row_position = self.table.rowCount()
         self.table.insertRow(row_position)
