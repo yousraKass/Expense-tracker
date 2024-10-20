@@ -15,6 +15,10 @@ class ExpenseApp(QMainWindow):
         self.setWindowTitle("Expense Tracker")
         self.setGeometry(100, 100, 600, 300)
 
+        self.setup_ui()
+
+
+    def setup_ui(self):
         # Create a central widget and set it as the central widget of the QMainWindow
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
@@ -22,6 +26,18 @@ class ExpenseApp(QMainWindow):
         # Create a vertical layout for the central widget
         layout = QVBoxLayout(central_widget)
 
+        self.setup_menu_bar()
+        # Input section
+        self.setup_input_section(layout)
+
+        self.create_table(layout)
+        
+        self.bottom_panel(layout)
+        
+        
+        self.update_total()
+   
+    def setup_menu_bar(self):
         # Create a menu bar
         menu_bar = QMenuBar(self)
         self.setMenuBar(menu_bar)
@@ -33,6 +49,7 @@ class ExpenseApp(QMainWindow):
         menu_bar.addMenu(edit_menu)
         menu_bar.addMenu(help_menu)
 
+    def setup_input_section(self,layout):
         # Create the top panel for input fields and add button
         top_panel = QHBoxLayout()
         layout.addLayout(top_panel)
@@ -57,12 +74,20 @@ class ExpenseApp(QMainWindow):
         top_panel.addWidget(self.price_input)
         top_panel.addWidget(add_button)
 
+    def create_table(self, layout):
         # Create the table to display expenses
         self.table = QTableWidget()
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["Expense", "Price"])
         layout.addWidget(self.table)
+        # Initialize with default data
+        self.table.setRowCount(3)
+        initial_data = [("Veg", 40.0), ("Fruit", 70.0), ("Fuel", 60.0)]
+        for row, (expense, price) in enumerate(initial_data):
+            self.table.setItem(row, 0, QTableWidgetItem(expense))
+            self.table.setItem(row, 1, QTableWidgetItem(str(price)))
 
+    def bottom_panel(self, layout):
         # Create the bottom panel for displaying the total
         total_label = QLabel("Total:")
         self.total_value = QLabel("0.00")
@@ -71,16 +96,6 @@ class ExpenseApp(QMainWindow):
         total_layout.addWidget(self.total_value)
         layout.addLayout(total_layout)
 
-        # Initialize with default data
-        self.table.setRowCount(3)
-        initial_data = [("Veg", 40.0), ("Fruit", 70.0), ("Fuel", 60.0)]
-        for row, (expense, price) in enumerate(initial_data):
-            self.table.setItem(row, 0, QTableWidgetItem(expense))
-            self.table.setItem(row, 1, QTableWidgetItem(str(price)))
-        
-        self.update_total()
-
-   
 
     def add_expense(self):
         # Get the values from the input fields
