@@ -34,4 +34,5 @@ class ExpenseDb:
             "select * from Expenses"
         )
         rows = self.cur.fetchall()
-        return rows
+        filtered_rows = [(expense_name, price) for _, expense_name, price in rows]
+        return filtered_rows
