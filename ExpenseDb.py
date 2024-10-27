@@ -34,16 +34,34 @@ class ExpenseDb:
         )
         self.conn.commit()
 
-    def getAll(self, month = 10, year = -1):
+    def getAll(self, month = -1, year = -1):
         self.cur.execute(
             "select * from Expenses"
         )
         rows = self.cur.fetchall()
         selected_rows = []
-        if month != -1 and month >= 0 and month <= 12:
+        if month != -1 and year == -1 and month >= 0 and month <= 12:
             for row in rows:
                 if int(row[3][5:7]) == int(month):
                     selected_rows.append(row)
                     print(row)
+
+        elif year != -1 and month == -1:
+            for row in rows:
+                if int(row[3][0:4]) == int(year):
+                    selected_rows.append(row)
+                    print(row)
+
+        elif year != -1 and  month != -1 and month >= 0 and month <= 12:
+            for row in rows:
+                if int(row[3][0:4]) == int(year) and int(row[3][5:7]) == int(month):
+                    selected_rows.append(row)
+                    print(row)
+                    print("hehe")
+
+
+        elif month == -1 and year == -1:
+            selected_rows = rows
+
         filtered_rows = [(expense_name, price) for _, expense_name, price, datee in selected_rows]
         return filtered_rows
