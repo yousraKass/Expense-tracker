@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date, datetime
 
 class ExpenseDb:
     def __init__(self):
@@ -8,16 +9,20 @@ class ExpenseDb:
             '''CREATE TABLE IF NOT EXISTS Expenses
                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
                 expense_name TEXT NOT NULL,
-                price REAL NOT NULL)''')
+                price REAL NOT NULL,
+                date TEXT
+                )''')
 
     def __del__(self):
         self.conn.close()
 
 
     def insert(self, expense, price):
+        dateOfInsertion = datetime.today()
+        dateOfInsertion = datetime.strftime(dateOfInsertion, "%Y-%m-%d")
         self.cur.execute(
-            "insert into Expenses (expense_name, price) values (?,?)",
-            (expense, price)
+            "insert into Expenses (expense_name, price, date) values (?,?,?)",
+            (expense, price, dateOfInsertion)
         )
         self.conn.commit()
 
@@ -29,10 +34,16 @@ class ExpenseDb:
         )
         self.conn.commit()
 
-    def getAll(self):
+    def getAll(self, month = 10, year = -1):
         self.cur.execute(
             "select * from Expenses"
         )
         rows = self.cur.fetchall()
-        filtered_rows = [(expense_name, price) for _, expense_name, price in rows]
+        selected_rows = []
+        if month != -1 and month >= 0 and month <= 12:
+            for row in rows:
+                if int(row[3][5:7]) == int(month):
+                    selected_rows.append(row)
+                    print(row)
+        filtered_rows = [(expense_name, price) for _, expense_name, price, datee in selected_rows]
         return filtered_rows

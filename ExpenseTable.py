@@ -13,7 +13,7 @@ class ExpenseTable(QTableWidget):
     def populate_initial_data(self):
         #initial_data = [("Veg", 40.0), ("Fruit", 70.0), ("Fuel", 60.0)]
         initial_data = self.db.getAll()
-        print(self.db.getAll())
+        #print(self.db.getAll())
         self.setRowCount(len(initial_data))
         for row, (expense, price) in enumerate(initial_data):
             self.setItem(row, 0, QTableWidgetItem(expense))
