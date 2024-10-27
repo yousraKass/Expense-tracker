@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QFrame, QComboBox,
-    QLineEdit,QLabel
+    QLineEdit,QLabel,QPushButton
 )
 
 from MenuBar import MenuBar
@@ -41,15 +41,25 @@ class ExpenseApp(QMainWindow):
         month_input = QLineEdit()
         month_input.setPlaceholderText("enter month here")
         
+        btn = QPushButton("show")
+        btn2 = QPushButton("download")
+
+        
+        
+        
         filter_layout.addWidget(year_label)
         filter_layout.addWidget(year_input)
         filter_layout.addWidget(month_label)
         filter_layout.addWidget(month_input)
+        filter_layout.addWidget(btn)
+        filter_layout.addWidget(btn2)
+
+
         
         self.filter_container.setLayout(filter_layout)
-        filter_layout.addWidget()
         
-        layout.addLayout(filter_layout)
+        layout.addWidget(self.filter_container)
+        
         
         # Expense table
         self.table = ExpenseTable()  # Create the table instance
