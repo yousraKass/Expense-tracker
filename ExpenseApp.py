@@ -47,9 +47,10 @@ class ExpenseApp(QMainWindow):
         filter_layout.addWidget(month_input)
         
         self.filter_container.setLayout(filter_layout)
-        
-        
         filter_layout.addWidget()
+        
+        layout.addLayout(filter_layout)
+        
         # Expense table
         self.table = ExpenseTable()  # Create the table instance
         layout.addWidget(self.table)
