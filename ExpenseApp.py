@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout
+    QMainWindow, QWidget, QVBoxLayout, QFrame, QComboBox,
+    QLineEdit,QLabel,QPushButton
 )
 
 from MenuBar import MenuBar
@@ -24,9 +25,47 @@ class ExpenseApp(QMainWindow):
         self.menu_bar = MenuBar(self)
         self.setMenuBar(self.menu_bar)
 
+        self.filter_container = QFrame()
+        filter_layout = QVBoxLayout()
+        
+        year_label = QLabel()
+        year_label.setText("Enter year")
+        
+        
+        month_label = QLabel()
+        month_label.setText("Enter Month")
+        
+        year_input = QLineEdit()
+        year_input.setPlaceholderText("enter the year here")
+        
+        month_input = QLineEdit()
+        month_input.setPlaceholderText("enter month here")
+        
+        btn = QPushButton("show")
+        btn2 = QPushButton("download")
+
+        
+        
+        
+        filter_layout.addWidget(year_label)
+        filter_layout.addWidget(year_input)
+        filter_layout.addWidget(month_label)
+        filter_layout.addWidget(month_input)
+        filter_layout.addWidget(btn)
+        filter_layout.addWidget(btn2)
+
+
+        
+        self.filter_container.setLayout(filter_layout)
+        
+        layout.addWidget(self.filter_container)
+        
+        
         # Expense table
         self.table = ExpenseTable()  # Create the table instance
         layout.addWidget(self.table)
+        pagination_controls = self.table.create_pagination_controls()
+        layout.addWidget(pagination_controls)
 
         # Input section, pass the ExpenseTable instance
         self.input_section = InputSection(self.add_expense, self.table)
