@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QFrame, QComboBox,
-    QLineEdit,QLabel,QPushButton
+    QLineEdit, QLabel, QPushButton
 )
 
 from MenuBar import MenuBar
@@ -75,9 +75,18 @@ class ExpenseApp(QMainWindow):
         self.total_display = TotalDisplay()
         layout.addWidget(self.total_display)
 
-        # Update total
         self.update_total()
+        total_exp = self.update_total()
+       
 
+
+        # export pdf from function export_to_pdf in ExpenseTable
+        btn2.clicked.connect(lambda: self.table.export_to_pdf(year_input.text(), month_input.text(), total_exp))
+        layout.addWidget(btn2)
+
+        
+
+        
     def add_expense(self):
         # Get the inputs from the input section
         expense_name, price_text = self.input_section.get_inputs()
@@ -94,6 +103,13 @@ class ExpenseApp(QMainWindow):
         for row in range(self.table.rowCount()):
             price_item = self.table.item(row, 1)
             if price_item:
-                total += float(price_item.text())
+                try:
+                    total += float(price_item.text())
+                except ValueError:
+                    pass  # Ignore items that cannot be converted to float
+              
         # Update the total display
         self.total_display.update_total(total)
+        return total
+
+        
