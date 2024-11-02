@@ -2,6 +2,10 @@ from PyQt5.QtWidgets import (
     QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QWidget
 )
 from ExpenseDb import ExpenseDb
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import datetime
+import os
 
 class ExpenseTable(QTableWidget):
     def __init__(self, items_per_page=10):
@@ -76,3 +80,42 @@ class ExpenseTable(QTableWidget):
         controls_widget = QWidget()
         controls_widget.setLayout(controls_layout)
         return controls_widget
+    
+    def export_to_pdf(self, year_input, month_input, total_expense):
+        # Generate a temporary file path
+        temp_file_path = "expense_report.pdf"
+
+        # Create a canvas object
+        c = canvas.Canvas(temp_file_path, pagesize=letter)
+        width, height = letter
+
+        # Set title
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(100, height - 40, f"Expense Report for {month_input}/{year_input}")
+
+        # Set table headers
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(100, height - 80, "Expense")
+        c.drawString(300, height - 80, "Price")
+
+        # Add expenses to the PDF
+        y = height - 100
+        c.setFont("Helvetica", 12)
+        for row in range(self.rowCount()):
+            expense = self.item(row, 0).text()
+            price = self.item(row, 1).text()
+            c.drawString(100, y, expense)
+            c.drawString(300, y, price)
+            y -= 14  # Reduce the height between expenses
+
+        # Add total expense at the bottom
+        y -= 20  # Add some space before the total
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(100, y, "Total Expense")
+        c.drawString(300, y, str(total_expense))
+
+        # Save the PDF file
+        c.save()
+
+        # Open the file in the default browser
+        os.system(f"xdg-open {temp_file_path}")
