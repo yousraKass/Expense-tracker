@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout
+    QMainWindow, QWidget, QVBoxLayout, QFrame, QComboBox,
+    QLineEdit, QLabel, QPushButton
 )
 
 from MenuBar import MenuBar
@@ -24,9 +25,47 @@ class ExpenseApp(QMainWindow):
         self.menu_bar = MenuBar(self)
         self.setMenuBar(self.menu_bar)
 
+        self.filter_container = QFrame()
+        filter_layout = QVBoxLayout()
+        
+        year_label = QLabel()
+        year_label.setText("Enter year")
+        
+        
+        month_label = QLabel()
+        month_label.setText("Enter Month")
+        
+        year_input = QLineEdit()
+        year_input.setPlaceholderText("enter the year here")
+        
+        month_input = QLineEdit()
+        month_input.setPlaceholderText("enter month here")
+        
+        btn = QPushButton("show")
+        btn2 = QPushButton("download")
+
+        
+        
+        
+        filter_layout.addWidget(year_label)
+        filter_layout.addWidget(year_input)
+        filter_layout.addWidget(month_label)
+        filter_layout.addWidget(month_input)
+        filter_layout.addWidget(btn)
+        filter_layout.addWidget(btn2)
+
+
+        
+        self.filter_container.setLayout(filter_layout)
+        
+        layout.addWidget(self.filter_container)
+        
+        
         # Expense table
         self.table = ExpenseTable()  # Create the table instance
         layout.addWidget(self.table)
+        pagination_controls = self.table.create_pagination_controls()
+        layout.addWidget(pagination_controls)
 
         # Input section, pass the ExpenseTable instance
         self.input_section = InputSection(self.add_expense, self.table)
@@ -36,9 +75,18 @@ class ExpenseApp(QMainWindow):
         self.total_display = TotalDisplay()
         layout.addWidget(self.total_display)
 
-        # Update total
         self.update_total()
+        total_exp = self.update_total()
+       
 
+
+        # export pdf from function export_to_pdf in ExpenseTable
+        btn2.clicked.connect(lambda: self.table.export_to_pdf(year_input.text(), month_input.text(), total_exp))
+        layout.addWidget(btn2)
+
+        
+
+        
     def add_expense(self):
         # Get the inputs from the input section
         expense_name, price_text = self.input_section.get_inputs()
@@ -55,6 +103,13 @@ class ExpenseApp(QMainWindow):
         for row in range(self.table.rowCount()):
             price_item = self.table.item(row, 1)
             if price_item:
-                total += float(price_item.text())
+                try:
+                    total += float(price_item.text())
+                except ValueError:
+                    pass  # Ignore items that cannot be converted to float
+              
         # Update the total display
         self.total_display.update_total(total)
+        return total
+
+        

@@ -13,26 +13,33 @@ class ExpenseDb:
     def __del__(self):
         self.conn.close()
 
-
     def insert(self, expense, price):
         self.cur.execute(
-            "insert into Expenses (expense_name, price) values (?,?)",
+            "INSERT INTO Expenses (expense_name, price) VALUES (?, ?)",
             (expense, price)
         )
         self.conn.commit()
 
-
     def delete(self, expense):
         self.cur.execute(
-            "delete from Expenses where expense_name=?",
+            "DELETE FROM Expenses WHERE expense_name = ?",
             (expense,)
         )
         self.conn.commit()
 
     def getAll(self):
-        self.cur.execute(
-            "select * from Expenses"
-        )
+        self.cur.execute("SELECT * FROM Expenses")
         rows = self.cur.fetchall()
         filtered_rows = [(expense_name, price) for _, expense_name, price in rows]
         return filtered_rows
+
+
+    def get_paginated(self, offset, limit):
+        """Fetch a limited number of expenses starting from an offset."""
+        self.cur.execute("SELECT expense_name, price FROM Expenses LIMIT ? OFFSET ?", (limit, offset))
+        return self.cur.fetchall()
+
+    def count_expenses(self):
+        """Count total number of expenses."""
+        self.cur.execute("SELECT COUNT(*) FROM Expenses")
+        return self.cur.fetchone()[0]
