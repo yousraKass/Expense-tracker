@@ -4,40 +4,44 @@ from PyQt5.QtWidgets import (
 from ExpenseDb import ExpenseDb
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-import datetime
+from datetime import date
 import os
 
 class ExpenseTable(QTableWidget):
-    def __init__(self, items_per_page=10):
-        super().__init__(0, 2)
+    def __init__(self, items_per_page=1):
+        super().__init__(0, 3)
         self.db = ExpenseDb()
         self.items_per_page = items_per_page
         self.current_page = 0
-        self.setHorizontalHeaderLabels(["Expense", "Price"])
-        self.populate_page()
+        self.setHorizontalHeaderLabels(["Expense", "Price", "Date"])
+        self.populate_page(None, None)
+        
+        
 
 
-    def populate_page(self):
+    def populate_page(self, target_month, target_year):
         # Clear current rows
         self.setRowCount(0)
         
         # Retrieve expenses for the current page from the database
         offset = self.current_page * self.items_per_page
-        expenses = self.db.get_paginated(offset, self.items_per_page)  # Use get_paginated here
+
+        expenses = self.db.get_paginated(offset, self.items_per_page,target_month=target_month, target_year=target_year)  # Use get_paginated here
         
         # Populate table with paginated data
-        for row, (expense, price) in enumerate(expenses):
+        for row, (expense, price, date) in enumerate(expenses):
             self.insertRow(row)
             self.setItem(row, 0, QTableWidgetItem(expense))
             self.setItem(row, 1, QTableWidgetItem(str(price)))
-
+            self.setItem(row, 2, QTableWidgetItem(str(date)))
 
     def add_expense(self, expense_name, price_text):
         # Insert the new expense into the database
-        self.db.insert(expense_name, price_text)
+        current_date = date.today()
+        self.db.insert(expense_name, price_text, current_date)
         
         # Refresh current page to reflect any additions
-        self.populate_page()
+        self.populate_page(None, None)
 
     def delete_expense(self):
         selected_rows = self.selectionModel().selectedRows()
@@ -47,20 +51,22 @@ class ExpenseTable(QTableWidget):
                 expense_name = expense_item.text()
                 self.db.delete(expense_name)
             self.removeRow(index.row())
-        self.populate_page()
+        self.populate_page(None, None)
 
     def next_page(self):
         # Go to the next page if there is data
         total_expenses = self.db.count_expenses()
         if (self.current_page + 1) * self.items_per_page < total_expenses:
             self.current_page += 1
-            self.populate_page()
+            self.populate_page(None, None)
 
     def previous_page(self):
         # Go to the previous page if we are not on the first page
         if self.current_page > 0:
             self.current_page -= 1
-            self.populate_page()
+            self.populate_page(None, None)
+            
+    
 
     def create_pagination_controls(self):
         # Pagination controls layout

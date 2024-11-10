@@ -35,22 +35,25 @@ class ExpenseApp(QMainWindow):
         month_label = QLabel()
         month_label.setText("Enter Month")
         
-        year_input = QLineEdit()
-        year_input.setPlaceholderText("enter the year here")
+        self.year_input = QLineEdit()
+        self.year_input.setPlaceholderText("enter the year here")
         
-        month_input = QLineEdit()
-        month_input.setPlaceholderText("enter month here")
+        self.month_input = QLineEdit()
+        self.month_input.setPlaceholderText("enter month here")
         
         btn = QPushButton("show")
+        btn.clicked.connect(self.filter)
+        
+        
         btn2 = QPushButton("download")
 
         
         
         
         filter_layout.addWidget(year_label)
-        filter_layout.addWidget(year_input)
+        filter_layout.addWidget(self.year_input)
         filter_layout.addWidget(month_label)
-        filter_layout.addWidget(month_input)
+        filter_layout.addWidget(self.month_input)
         filter_layout.addWidget(btn)
         filter_layout.addWidget(btn2)
 
@@ -81,7 +84,7 @@ class ExpenseApp(QMainWindow):
 
 
         # export pdf from function export_to_pdf in ExpenseTable
-        btn2.clicked.connect(lambda: self.table.export_to_pdf(year_input.text(), month_input.text(), total_exp))
+        btn2.clicked.connect(lambda: self.table.export_to_pdf(self.year_input.text(), self.month_input.text(), total_exp))
         layout.addWidget(btn2)
 
         
@@ -111,5 +114,15 @@ class ExpenseApp(QMainWindow):
         # Update the total display
         self.total_display.update_total(total)
         return total
+    
+    def filter(self):
+        target_year = None if self.year_input.text() == "" else self.year_input.text()
+        target_month =  None if self.month_input.text() == "" else self.month_input.text()
+        
+        print("filter: ", target_year)
+        print("filter: ", target_month)
+        
+        
+        self.table.populate_page(target_month=target_month, target_year=target_year)
 
         
