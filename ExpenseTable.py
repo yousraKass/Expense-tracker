@@ -8,7 +8,7 @@ from datetime import date
 import os
 
 class ExpenseTable(QTableWidget):
-    def __init__(self, items_per_page=1):
+    def __init__(self, items_per_page=2):
         super().__init__(0, 3)
         self.db = ExpenseDb()
         self.items_per_page = items_per_page
